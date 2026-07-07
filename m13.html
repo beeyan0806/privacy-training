@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M-13 個人情報保護の実践</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Noto+Serif+JP:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3f4f8; --surface:#fff; --surface2:#eaecf4; --ink:#1a1a35; --ink2:#4a4a6a;
+  --accent:#2c3e8c; --accent2:#c0392b; --accent3:#27ae60; --amber:#d97706;
+  --border:#d0d4e8; --shadow:0 2px 8px rgba(0,0,0,0.07);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif;font-weight:300;line-height:1.8}
+
+.top-nav{background:#1a1a35;color:#fff;padding:0.7rem 2rem;display:flex;justify-content:space-between;align-items:center;font-family:'DM Sans',sans-serif;font-size:0.7rem;letter-spacing:0.1em;position:sticky;top:0;z-index:100}
+.nav-module{color:#aec6ff}
+.nav-links a{color:#aaa;text-decoration:none;margin-left:1.5rem;transition:color 0.2s}
+.nav-links a:hover{color:#fff}
+
+.hero{background:linear-gradient(135deg,#1a237e 0%,#283593 50%,#1565c0 100%);color:#fff;padding:4rem 2.5rem 3.5rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle at 75% 30%,rgba(255,255,255,0.07) 0%,transparent 50%);pointer-events:none}
+.hero::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:48px;background:var(--bg);clip-path:ellipse(55% 100% at 50% 100%)}
+.hero-inner{position:relative;z-index:1;max-width:960px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.9);font-size:0.68rem;letter-spacing:0.15em;padding:0.3em 0.9em;border-radius:20px;margin-bottom:1.4rem;text-transform:uppercase}
+.hero h1{font-family:'Noto Serif JP',serif;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:700;color:#fff;line-height:1.25;margin-bottom:0.7rem}
+.hero-sub{color:rgba(255,255,255,0.7);font-size:0.9rem;max-width:560px;line-height:1.8;margin-bottom:2rem}
+.hero-meta{display:flex;gap:2rem;flex-wrap:wrap;font-size:0.78rem;color:rgba(255,255,255,0.6);font-family:'DM Sans',sans-serif}
+.hero-meta span{color:#aec6ff;margin-right:0.3rem}
+.level-tag{display:inline-block;background:rgba(16,185,129,0.2);color:#4cde8e;border:1px solid rgba(16,185,129,0.3);padding:0.2em 0.8em;font-size:0.65rem;letter-spacing:0.1em;margin-top:1rem;border-radius:20px}
+
+.main{max-width:960px;margin:0 auto;padding:3rem 2rem 6rem}
+
+.progress-bar-wrap{background:var(--surface);border:1px solid var(--border);padding:1.2rem 1.5rem;margin-bottom:2.5rem;display:flex;align-items:center;gap:1.5rem;border-radius:8px;box-shadow:var(--shadow)}
+.progress-label{font-size:0.72rem;font-family:'DM Sans',sans-serif;color:var(--ink2);white-space:nowrap}
+.progress-track{flex:1;height:5px;background:#d8dce8;border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),#aec6ff);border-radius:3px;transition:width 0.5s;width:0%}
+.progress-pct{font-family:'DM Sans',sans-serif;font-size:0.72rem;color:var(--accent);min-width:3rem;text-align:right;font-weight:700}
+
+.sec{margin-bottom:3.5rem}
+.sec-label{font-family:'DM Sans',sans-serif;font-size:0.62rem;letter-spacing:0.35em;color:var(--accent);text-transform:uppercase;margin-bottom:0.8rem;display:flex;align-items:center;gap:0.8rem;font-weight:700}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.sec h2{font-family:'Noto Serif JP',serif;font-size:1.35rem;font-weight:700;margin-bottom:1.2rem;line-height:1.4}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);padding:1.4rem 1.6rem;margin-bottom:1rem;border-radius:8px}
+.card p,.card li{font-size:0.88rem;color:var(--ink2);line-height:1.9}
+.card-blue{border-left:4px solid var(--accent)}
+.card-red{border-left:4px solid var(--accent2)}
+.card-green{border-left:4px solid var(--accent3)}
+.card-amber{border-left:4px solid var(--amber)}
+.card-navy{background:#1a1a35;color:#fff;border:none}
+.card-navy p,.card-navy li{color:rgba(255,255,255,0.82)}
+.card-navy strong{color:#aec6ff}
+
+.ref-src{display:inline-block;margin-top:0.7rem;font-size:0.72rem;color:var(--accent);background:rgba(44,62,140,0.07);border:1px solid rgba(44,62,140,0.2);padding:0.2em 0.7em;border-radius:4px;font-family:'DM Sans',sans-serif}
+.ref-src::before{content:'📎 出典：'}
+
+/* POLICY SECTION — 弊社方針 */
+.policy-wrap{background:linear-gradient(135deg,#f0f4ff 0%,#e8eef8 100%);border:1px solid #c5d0e8;border-radius:10px;padding:2rem;margin-bottom:1rem}
+.policy-wrap h3{font-family:'Noto Serif JP',serif;font-size:1rem;font-weight:700;color:var(--accent);margin-bottom:1rem;display:flex;align-items:center;gap:0.6rem}
+.policy-wrap h3::before{content:'📋';font-size:1rem}
+.policy-body{font-size:0.85rem;color:var(--ink2);line-height:1.9}
+.policy-body p{margin-bottom:0.7rem}
+.policy-body p:last-child{margin-bottom:0}
+
+/* GOVERNANCE TABLE */
+.gov-table{width:100%;border-collapse:collapse;font-size:0.82rem;margin:1rem 0}
+.gov-table th{background:var(--accent);color:#fff;padding:0.6rem 1rem;text-align:left;font-weight:500;font-size:0.72rem;letter-spacing:0.04em}
+.gov-table td{padding:0.7rem 1rem;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6}
+.gov-table tr:hover td{background:var(--surface2)}
+.gov-table tr:last-child td{border-bottom:none}
+.gov-role{font-weight:700;font-size:0.83rem}
+.badge-top{background:rgba(192,57,43,0.1);color:var(--accent2);font-size:0.62rem;padding:0.1em 0.5em;border-radius:4px;border:1px solid rgba(192,57,43,0.25);white-space:nowrap}
+
+/* PMS 8原則 */
+.principles-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0.8rem;margin:1rem 0}
+.principle-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1rem;transition:all 0.2s;cursor:default}
+.principle-card:hover{border-color:var(--accent);box-shadow:var(--shadow)}
+.principle-num{font-family:'DM Sans',sans-serif;font-size:0.62rem;font-weight:700;color:var(--accent);margin-bottom:0.3rem}
+.principle-title{font-size:0.85rem;font-weight:700;margin-bottom:0.4rem}
+.principle-body{font-size:0.75rem;color:var(--ink2);line-height:1.6}
+
+/* 4類型テーブル */
+.four-types{width:100%;border-collapse:collapse;font-size:0.82rem;margin:1rem 0;border-radius:8px;overflow:hidden}
+.four-types th{background:var(--accent);color:#fff;padding:0.7rem 1rem;text-align:left;font-weight:500;font-size:0.72rem}
+.four-types td{padding:0.75rem 1rem;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6;background:var(--surface)}
+.four-types tr:last-child td{border-bottom:none}
+.four-types tr:hover td{background:var(--surface2)}
+.tag-must{font-size:0.62rem;font-family:'DM Sans',sans-serif;background:rgba(192,57,43,0.1);color:var(--accent2);border:1px solid rgba(192,57,43,0.25);padding:0.1em 0.45em;border-radius:3px;font-weight:700}
+.tag-time{font-size:0.62rem;font-family:'DM Sans',sans-serif;background:rgba(215,119,0,0.1);color:var(--amber);border:1px solid rgba(215,119,0,0.25);padding:0.1em 0.45em;border-radius:3px}
+
+/* 統計 */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin:1.2rem 0}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.2rem;text-align:center;box-shadow:var(--shadow)}
+.stat-val{font-family:'DM Sans',sans-serif;font-size:2rem;font-weight:800;color:var(--accent);line-height:1;letter-spacing:-0.03em}
+.stat-lbl{font-size:0.72rem;color:var(--ink2);margin-top:0.3rem;line-height:1.4}
+.stat-src{font-size:0.62rem;color:#94a3b8;margin-top:0.4rem}
+
+/* インシデントタイムライン */
+.incident-list{display:flex;flex-direction:column;gap:0.8rem;margin:1rem 0}
+.incident-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;cursor:pointer}
+.incident-header{display:flex;align-items:center;gap:1rem;padding:1rem 1.2rem;transition:background 0.2s;user-select:none}
+.incident-header:hover{background:var(--surface2)}
+.incident-year{font-family:'DM Sans',sans-serif;font-size:0.68rem;font-weight:700;color:#fff;background:var(--accent2);padding:0.2em 0.6em;border-radius:4px;flex-shrink:0}
+.incident-title{font-weight:700;font-size:0.88rem;flex:1;line-height:1.4}
+.incident-type{font-size:0.65rem;font-family:'DM Sans',sans-serif;padding:0.15em 0.55em;border-radius:20px;flex-shrink:0}
+.type-ransomware{background:rgba(192,57,43,0.1);color:var(--accent2);border:1px solid rgba(192,57,43,0.25)}
+.type-misuse{background:rgba(44,62,140,0.1);color:var(--accent);border:1px solid rgba(44,62,140,0.25)}
+.type-insider{background:rgba(215,119,0,0.1);color:var(--amber);border:1px solid rgba(215,119,0,0.25)}
+.incident-chev{font-size:0.7rem;color:var(--ink2);transition:transform 0.2s;flex-shrink:0}
+.incident-item.open .incident-chev{transform:rotate(180deg)}
+.incident-body{display:none;padding:1rem 1.2rem 1.2rem;border-top:1px solid var(--border);background:#fafbff}
+.incident-item.open .incident-body{display:block}
+.incident-body p{font-size:0.84rem;color:var(--ink2);line-height:1.8;margin-bottom:0.7rem}
+.incident-body p:last-child{margin-bottom:0}
+.lesson{background:rgba(39,174,96,0.07);border-left:3px solid var(--accent3);padding:0.6rem 0.9rem;font-size:0.8rem;color:#1a5c32;margin-top:0.8rem;border-radius:0 4px 4px 0}
+
+/* 取扱いフロー */
+.step-flow{display:flex;flex-wrap:wrap;gap:0.8rem;margin:1.2rem 0}
+.step-item{flex:1;min-width:140px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1rem;text-align:center;cursor:pointer;transition:all 0.2s}
+.step-item:hover,.step-item.active{border-color:var(--accent);box-shadow:0 4px 12px rgba(44,62,140,0.12)}
+.step-item.active{background:#f0f4ff}
+.step-num{font-family:'DM Sans',sans-serif;font-size:0.6rem;font-weight:700;color:var(--accent);margin-bottom:0.3rem;letter-spacing:0.1em}
+.step-name{font-weight:700;font-size:0.85rem;margin-bottom:0.3rem}
+.step-detail{font-size:0.75rem;color:var(--ink2);line-height:1.6;display:none;text-align:left;margin-top:0.5rem;padding-top:0.5rem;border-top:1px dashed var(--border)}
+.step-item.active .step-detail{display:block}
+.step-toggle{font-size:0.65rem;color:var(--ink2);margin-top:0.3rem;opacity:0.7}
+
+/* AI注意点 チェックリスト */
+.checklist{list-style:none;margin:1rem 0}
+.checklist li{display:flex;align-items:flex-start;gap:0.8rem;padding:0.6rem 0;border-bottom:1px solid rgba(0,0,0,0.05);font-size:0.86rem;line-height:1.7}
+.checklist li:last-child{border-bottom:none}
+.check-box{width:22px;height:22px;border:2px solid var(--border);border-radius:4px;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;margin-top:0.05rem;font-size:0.8rem}
+.check-box.checked{background:var(--accent3);border-color:var(--accent3);color:#fff}
+
+/* ケーススタディ */
+.case-study{background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:1rem;overflow:hidden}
+.case-header{display:flex;align-items:center;gap:0.8rem;padding:1rem 1.2rem;cursor:pointer;user-select:none;transition:background 0.2s}
+.case-header:hover{background:var(--surface2)}
+.case-type{font-size:0.62rem;font-family:'DM Sans',sans-serif;font-weight:700;padding:0.2em 0.6em;border-radius:4px;flex-shrink:0}
+.case-type.bad{background:rgba(192,57,43,0.1);color:var(--accent2);border:1px solid rgba(192,57,43,0.25)}
+.case-type.good{background:rgba(39,174,96,0.1);color:var(--accent3);border:1px solid rgba(39,174,96,0.25)}
+.case-title{font-weight:700;font-size:0.88rem;flex:1}
+.case-chev{font-size:0.7rem;color:var(--ink2);transition:transform 0.2s;flex-shrink:0}
+.case-study.open .case-chev{transform:rotate(180deg)}
+.case-body{display:none;padding:1rem 1.2rem 1.2rem;border-top:1px solid var(--border);background:#fafbff}
+.case-study.open .case-body{display:block}
+.case-body p{font-size:0.84rem;color:var(--ink2);line-height:1.8;margin-bottom:0.7rem}
+.case-law{font-size:0.79rem;background:rgba(44,62,140,0.06);border-left:3px solid var(--accent);padding:0.6rem 0.9rem;color:var(--ink2);margin-top:0.5rem;border-radius:0 4px 4px 0}
+.case-point{font-size:0.79rem;background:rgba(39,174,96,0.06);border-left:3px solid var(--accent3);padding:0.6rem 0.9rem;color:#1a5c32;margin-top:0.5rem;border-radius:0 4px 4px 0}
+
+/* クイズ */
+.quiz-block{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.5rem;margin-top:1.5rem}
+.quiz-block h3{font-size:0.88rem;font-weight:700;margin-bottom:1rem;display:flex;align-items:flex-start;gap:0.6rem;line-height:1.5}
+.quiz-block h3::before{content:'Q';background:var(--accent);color:#fff;padding:0.1em 0.5em;font-family:'DM Sans',sans-serif;font-size:0.72rem;flex-shrink:0;margin-top:0.1rem;border-radius:3px}
+.quiz-options{display:grid;gap:0.5rem;margin-bottom:1rem}
+.q-opt{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:0.7rem 1rem;cursor:pointer;font-size:0.84rem;transition:all 0.2s;text-align:left;width:100%;font-family:'Noto Sans JP',sans-serif;line-height:1.5}
+.q-opt:hover:not(:disabled){border-color:var(--accent);background:#f0f4ff}
+.q-opt.correct{border-color:var(--accent3)!important;background:rgba(39,174,96,0.08)!important;color:var(--accent3)}
+.q-opt.wrong{border-color:var(--accent2)!important;background:rgba(192,57,43,0.06)!important;color:var(--accent2)}
+.q-feedback{font-size:0.81rem;padding:0.7rem 1rem;display:none;line-height:1.7;border-radius:6px}
+.q-feedback.show{display:block}
+.q-feedback.ok{background:rgba(39,174,96,0.08);border-left:3px solid var(--accent3);color:#1a5c32}
+.q-feedback.ng{background:rgba(192,57,43,0.06);border-left:3px solid var(--accent2);color:var(--accent2)}
+
+/* まとめ */
+.summary{background:#1a1a35;color:#fff;padding:2rem;margin-top:2.5rem;border-radius:10px}
+.summary h3{font-family:'Noto Serif JP',serif;font-size:1rem;margin-bottom:1rem;color:#aec6ff}
+.summary ul{list-style:none}
+.summary ul li{font-size:0.85rem;padding:0.45rem 0;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:flex-start;gap:0.6rem;line-height:1.7}
+.summary ul li::before{content:'✓';color:#aec6ff;flex-shrink:0;margin-top:0.1rem}
+.summary ul li:last-child{border-bottom:none}
+
+.nav-btns{display:flex;gap:1rem;margin-top:2rem;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.8rem 1.5rem;font-size:0.85rem;font-family:'Noto Sans JP',sans-serif;font-weight:500;text-decoration:none;transition:all 0.2s;border-radius:6px}
+.btn-prev{background:var(--surface2);color:var(--ink);border:1px solid var(--border)}
+.btn-prev::before{content:'←'}
+.btn-next{background:var(--accent3);color:#fff}
+.btn-next:hover{background:#1e9148}
+.btn-next::after{content:'→'}
+code{font-family:'DM Sans',monospace;font-size:0.82em;background:var(--surface2);padding:0.1em 0.4em;border-radius:3px;color:var(--accent2)}
+
+.form-copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <div><span class="nav-module">M-13</span> &nbsp;—&nbsp; 個人情報保護の実践</div>
+  <div class="nav-links">
+    <a href="index.html">← ポータルへ戻る</a>
+    <a href="m12.html">← M-12 総合演習</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge"><span>●</span> MODULE 13 / 13 — 専修モジュール</div>
+    <h1>個人情報保護の実践</h1>
+    <p class="hero-sub">弊社の保護方針・体制から個人情報保護法の正確な理解、開発・AI利用における実務対応まで体系的に習得する</p>
+    <div class="hero-meta">
+      <div><span>⏱</span>90分</div>
+      <div><span>👥</span>全員必修</div>
+      <div><span>📋</span>講義 + ケーススタディ + クイズ</div>
+    </div>
+    <div class="level-tag">BASIC → INTERMEDIATE</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="progress-bar-wrap">
+    <div class="progress-label">学習進捗</div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-pct" id="progressPct">0%</div>
+  </div>
+
+  <!-- S0 用語説明 -->
+  <div class="sec" data-section>
+    <div class="sec-label">SECTION 0 — 用語説明</div>
+    <h2>本研修で使用する主な用語</h2>
+    <div class="card" style="margin-bottom:1rem">
+      <p style="font-size:0.85rem;color:var(--ink2)">以下の用語は本研修全体を通じて登場します。学習前に確認しておきましょう。</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:0.8rem">
+      <div class="card card-blue">
+        <p style="font-size:0.72rem;font-weight:700;color:var(--accent);margin-bottom:0.4rem">PMS</p>
+        <p style="font-size:0.85rem;font-weight:700;margin-bottom:0.3rem">個人情報保護マネジメントシステム</p>
+        <p style="font-size:0.8rem;color:var(--ink2)">個人情報を安全に管理するための組織的な仕組み・体制。JIS Q 15001に準拠して構築・運用する。弊社はPMSを確立・運用し、継続的に改善を実施している。</p>
+      </div>
+      <div class="card card-blue">
+        <p style="font-size:0.72rem;font-weight:700;color:var(--accent);margin-bottom:0.4rem">JIS Q 15001</p>
+        <p style="font-size:0.85rem;font-weight:700;margin-bottom:0.3rem">個人情報保護マネジメントシステム要求事項</p>
+        <p style="font-size:0.8rem;color:var(--ink2)">日本産業規格が定めた個人情報保護の標準規格。弊社のPMSはこの規格に準拠しており、Pマーク認定の審査基準でもある。</p>
+      </div>
+      <div class="card card-blue">
+        <p style="font-size:0.72rem;font-weight:700;color:var(--accent);margin-bottom:0.4rem">Pマーク（プライバシーマーク）</p>
+        <p style="font-size:0.85rem;font-weight:700;margin-bottom:0.3rem">個人情報の適切な取り扱いを認定するマーク</p>
+        <p style="font-size:0.8rem;color:var(--ink2)">JIS Q 15001に適合した個人情報保護体制が整っている企業に付与される認定マーク。取引先選定の基準となることがあり、弊社の信頼性・競争力に直結する。</p>
+      </div>
+      <div class="card card-amber">
+        <p style="font-size:0.72rem;font-weight:700;color:var(--amber);margin-bottom:0.4rem">要配慮個人情報</p>
+        <p style="font-size:0.85rem;font-weight:700;margin-bottom:0.3rem">取り扱いに特別な配慮が必要な機微情報</p>
+        <p style="font-size:0.8rem;color:var(--ink2)">病歴・障害・犯罪歴・信条・人種・性的指向など、差別や不当な扱いにつながるおそれがある個人情報。取得には原則として本人の明示的な同意が必要。</p>
+      </div>
+      <div class="card card-amber">
+        <p style="font-size:0.72rem;font-weight:700;color:var(--amber);margin-bottom:0.4rem">NDA（秘密保持契約）</p>
+        <p style="font-size:0.85rem;font-weight:700;margin-bottom:0.3rem">Non-Disclosure Agreement</p>
+        <p style="font-size:0.8rem;color:var(--ink2)">業務上知り得た秘密情報を第三者に開示・漏洩しないことを約束する契約。弊社の全業務はNDAの下で遂行されており、違反は契約解除・損害賠償の対象となる。</p>
+      </div>
+      <div class="card card-amber">
+        <p style="font-size:0.72rem;font-weight:700;color:var(--amber);margin-bottom:0.4rem">MFA（多要素認証）</p>
+        <p style="font-size:0.85rem;font-weight:700;margin-bottom:0.3rem">Multi-Factor Authentication</p>
+        <p style="font-size:0.8rem;color:var(--ink2)">パスワードに加え、スマートフォン通知・指紋・ワンタイムパスワード等、複数の認証を組み合わせてログインするセキュリティ対策。VPNへのMFA設定は弊社業務の最重要対策。</p>
+      </div>
+      <div class="card card-red">
+        <p style="font-size:0.72rem;font-weight:700;color:var(--accent2);margin-bottom:0.4rem">VPN</p>
+        <p style="font-size:0.85rem;font-weight:700;margin-bottom:0.3rem">Virtual Private Network（仮想プライベートネットワーク）</p>
+        <p style="font-size:0.8rem;color:var(--ink2)">インターネット上に暗号化された専用回線を設け、安全に客先システムへ接続する技術。アカウント情報の盗用による不正アクセスの主な侵入経路にもなっており、MFA設定が必須。</p>
+      </div>
+      <div class="card card-red">
+        <p style="font-size:0.72rem;font-weight:700;color:var(--accent2);margin-bottom:0.4rem">ランサムウェア</p>
+        <p style="font-size:0.85rem;font-weight:700;margin-bottom:0.3rem">身代金要求型マルウェア</p>
+        <p style="font-size:0.8rem;color:var(--ink2)">感染するとファイルを暗号化して使用不能にし、復元と引き換えに金銭を要求する悪意のあるソフトウェア。KADOKAWA・アサヒ・アスクルへの攻撃でも使用された。</p>
+      </div>
+      <div class="card card-green">
+        <p style="font-size:0.72rem;font-weight:700;color:var(--accent3);margin-bottom:0.4rem">第三者提供</p>
+        <p style="font-size:0.85rem;font-weight:700;margin-bottom:0.3rem">個人情報を外部の他者へ渡すこと</p>
+        <p style="font-size:0.8rem;color:var(--ink2)">本人の同意なく、同一組織外の第三者（外部企業・クラウドサービス・AIサービス等）に個人情報を渡す行為。原則として本人の事前同意が必要であり、無断での提供は個人情報保護法違反となる。</p>
+      </div>
+      <div class="card card-green">
+        <p style="font-size:0.72rem;font-weight:700;color:var(--accent3);margin-bottom:0.4rem">安全管理措置</p>
+        <p style="font-size:0.85rem;font-weight:700;margin-bottom:0.3rem">個人情報を守るための組織的・技術的な対策</p>
+        <p style="font-size:0.8rem;color:var(--ink2)">暗号化・アクセス権の最小化・ログ記録・定期的な教育・廃棄管理など、個人情報の漏洩・滅失・改ざんを防ぐための総合的な対策。個人情報保護法で義務付けられている。</p>
+      </div>
+      <div class="card">
+        <p style="font-size:0.72rem;font-weight:700;color:var(--ink2);margin-bottom:0.4rem">マスキング処理</p>
+        <p style="font-size:0.85rem;font-weight:700;margin-bottom:0.3rem">個人情報を識別不能にする加工処理</p>
+        <p style="font-size:0.8rem;color:var(--ink2)">氏名・メールアドレス等をダミーデータに置き換えること。開発・テスト環境や生成AIへのデータ入力前に必須の処理。</p>
+      </div>
+      <div class="card">
+        <p style="font-size:0.72rem;font-weight:700;color:var(--ink2);margin-bottom:0.4rem">個人情報保護委員会</p>
+        <p style="font-size:0.85rem;font-weight:700;margin-bottom:0.3rem">個人情報保護法の執行機関</p>
+        <p style="font-size:0.8rem;color:var(--ink2)">個人情報保護法を所管する国の行政機関。要配慮情報・1,000件超・不正アクセス等の漏洩が発生した場合、3〜5日以内の速報義務が生じる。</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- S1 個人情報おさらい -->
+  <div class="sec" data-section>
+    <div class="sec-label">SECTION 1</div>
+    <h2>個人情報とは？ ― おさらい</h2>
+
+    <!-- STEP1 個人情報 -->
+    <div style="border-left:4px solid var(--accent);padding-left:1rem;margin-bottom:1.5rem">
+      <p style="font-size:0.72rem;font-weight:700;color:var(--accent);letter-spacing:0.1em;margin-bottom:0.5rem">STEP 1 ― 個人情報</p>
+      <p style="font-weight:700;font-size:0.95rem;margin-bottom:0.5rem">生存する個人に関する情報であって、特定の個人を識別できるもの</p>
+      <div class="card card-blue" style="margin-bottom:0.8rem">
+        <p style="font-size:0.85rem;color:var(--ink2)">弊社方針では、個人情報を<strong>「氏名・生年月日・その他の記述、又は個人別につけられた番号・記号その他の符号・画像もしくは音声など、個人を特定できるもの」</strong>と定義しています。</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0.8rem">
+        <div class="card" style="border-top:3px solid var(--accent)">
+          <p style="font-size:0.7rem;font-weight:700;color:var(--accent);margin-bottom:0.4rem">BASIC</p>
+          <p style="font-weight:700;font-size:0.85rem;margin-bottom:0.4rem">基本的な個人情報</p>
+          <p style="font-size:0.78rem">氏名、住所、生年月日、電話番号、メールアドレス、顔写真、マイナンバー</p>
+        </div>
+        <div class="card" style="border-top:3px solid var(--amber)">
+          <p style="font-size:0.7rem;font-weight:700;color:var(--amber);margin-bottom:0.4rem">COMBINATION</p>
+          <p style="font-weight:700;font-size:0.85rem;margin-bottom:0.4rem">組み合わせによる個人情報</p>
+          <p style="font-size:0.78rem">単独では特定できないが、他情報と組み合わせることで特定できるもの</p>
+          <p style="font-size:0.75rem;color:#888;margin-top:0.5rem;padding-top:0.5rem;border-top:1px dashed #ddd"><strong>例①</strong> 「A社に勤務する30代男性・東京在住」→複数条件の組み合わせで特定可能<br><strong>例②</strong> メールアドレス「taro.yamada@〇〇.co.jp」→氏名を含み個人を推定できる<br><strong>例③</strong> 社員番号＋部署名→社内名簿と照合で氏名を特定できる<br><strong>例④</strong> 位置情報の継続的な記録→自宅・職場・行動パターンから特定できる</p>
+        </div>
+        <div class="card" style="border-top:3px solid var(--accent3)">
+          <p style="font-size:0.7rem;font-weight:700;color:var(--accent3);margin-bottom:0.4rem">DIGITAL</p>
+          <p style="font-weight:700;font-size:0.85rem;margin-bottom:0.4rem">デジタル識別子</p>
+          <p style="font-size:0.78rem">IPアドレス・Cookie ID・デバイスID・ログインID・位置情報履歴</p>
+        </div>
+        <div class="card" style="border-top:3px solid var(--accent2)">
+          <p style="font-size:0.7rem;font-weight:700;color:var(--accent2);margin-bottom:0.4rem">SENSITIVE ⚠️</p>
+          <p style="font-weight:700;font-size:0.85rem;margin-bottom:0.4rem">要配慮個人情報</p>
+          <p style="font-size:0.78rem">病歴・障害・犯罪歴・信条・人種・性的指向。<strong>取得に本人同意が必須</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP2 個人データ -->
+    <div style="border-left:4px solid var(--amber);padding-left:1rem;margin-bottom:1.5rem">
+      <p style="font-size:0.72rem;font-weight:700;color:var(--amber);letter-spacing:0.1em;margin-bottom:0.5rem">STEP 2 ― 個人データ</p>
+      <p style="font-weight:700;font-size:0.95rem;margin-bottom:0.5rem">個人情報のうち、データベース等に体系的に整理されたもの</p>
+      <div class="card card-amber">
+        <p style="font-size:0.85rem;color:var(--ink2);line-height:1.9">顧客管理システム・名簿・台帳・スプレッドシートなど、<strong>検索・照合できる形で整理された個人情報</strong>が「個人データ」に該当します。データベース化されていない散在した情報は個人データには該当しません。</p>
+        <div style="margin-top:0.8rem;display:flex;gap:0.8rem;flex-wrap:wrap">
+          <span style="background:rgba(217,119,6,0.1);padding:0.3em 0.8em;border-radius:4px;font-size:0.78rem;font-weight:700;color:var(--amber)">✓ 顧客管理DB</span>
+          <span style="background:rgba(217,119,6,0.1);padding:0.3em 0.8em;border-radius:4px;font-size:0.78rem;font-weight:700;color:var(--amber)">✓ 従業員名簿</span>
+          <span style="background:rgba(217,119,6,0.1);padding:0.3em 0.8em;border-radius:4px;font-size:0.78rem;font-weight:700;color:var(--amber)">✓ 採用応募者一覧</span>
+          <span style="background:rgba(217,119,6,0.1);padding:0.3em 0.8em;border-radius:4px;font-size:0.78rem;font-weight:700;color:var(--amber)">✓ 取引先連絡先リスト</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP3 保有個人データ -->
+    <div style="border-left:4px solid var(--accent3);padding-left:1rem">
+      <p style="font-size:0.72rem;font-weight:700;color:var(--accent3);letter-spacing:0.1em;margin-bottom:0.5rem">STEP 3 ― 保有個人データ</p>
+      <p style="font-weight:700;font-size:0.95rem;margin-bottom:0.5rem">個人データのうち、開示・訂正・削除等の権限を弊社が持つもの</p>
+      <div class="card card-green">
+        <p style="font-size:0.85rem;color:var(--ink2);line-height:1.9">「保有個人データ」とは、個人データのうち、個人情報取扱事業者が<strong>開示、内容の訂正、追加又は削除、利用の停止、消去及び第三者への提供の停止を行うことのできる権限を有するもの</strong>をいいます。</p>
+        <div style="background:rgba(230,110,0,0.08);border-left:3px solid var(--amber);padding:0.7rem 1rem;margin-top:0.7rem;border-radius:0 4px 4px 0;font-size:0.82rem;color:var(--ink2);line-height:1.9">
+          ⚠️ <strong>委託を受けて取り扱っている個人データ</strong>や、<strong>体系的に整理されていないもの</strong>は「保有個人データ」に該当しません。
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- S1 弊社の個人情報保護方針 -->
+  <div class="sec" data-section>
+    <div class="sec-label">SECTION 2</div>
+    <h2>個人情報保護に関する基本方針</h2>
+
+    <!-- 基本方針 -->
+    <div class="policy-wrap">
+      <h3>個人情報保護に関する基本方針</h3>
+      <div class="policy-body">
+        <p>株式会社シスコム・テクノロジーは、情報産業の一翼を担う情報処理サービス産業の一員として、<strong>情報の安全管理を重要な社会的責任</strong>であると認識し、プライバシー保護を企業活動における最優先事項の一つとして位置付けています。</p>
+        <p>「個人情報保護マネジメントシステム－要求事項（JIS Q 15001）」に準拠した個人情報保護マネジメントシステム（PMS）を確立・運用し、定期的な見直しおよび継続的な改善を実施します。社員・役員を含む<strong>全従業員は、本趣旨を理解し遵守します</strong>。</p>
+        <p style="font-size:0.8rem;color:#888;margin-top:0.5rem">制定：2005年10月01日　改訂：2019年05月17日　代表取締役 保木本朗</p>
+      </div>
+    </div>
+
+    <!-- 適用範囲 -->
+    <div class="card card-blue" style="margin-top:1rem">
+      <p style="font-weight:700;margin-bottom:0.6rem">📌 適用範囲</p>
+      <p>当社管理下にある<strong>全ての事業活動</strong>に適用します。</p>
+      <ul style="margin-top:0.6rem;padding-left:1.2rem;font-size:0.85rem;color:var(--ink2);line-height:2">
+        <li>ソフトウェア開発製品・当社の提供する全ての製品／サービス及び全ての業務活動</li>
+        <li>顧客先での委託業務</li>
+        <li>従業者・採用応募者・取引先等の個人情報</li>
+        <li>その他関連サービス</li>
+      </ul>
+      <p style="margin-top:0.8rem;font-size:0.83rem"><strong>所在地：</strong>〒170-0013 東京都豊島区東池袋1-25-6 PMO池袋11階</p>
+    </div>
+
+    <!-- 第三者提供・委託 -->
+    <div class="card card-amber" style="margin-top:1rem">
+      <p style="font-weight:700;margin-bottom:0.6rem">🔒 第三者提供の制限と業務委託</p>
+      <p style="font-size:0.85rem;color:var(--ink2);margin-bottom:0.6rem">弊社は、以下の場合を除き取得した個人情報を第三者に提供しません。</p>
+      <ul style="font-size:0.82rem;color:var(--ink2);line-height:1.9;padding-left:1.2rem">
+        <li>個人情報の第三者提供を別途個別に明示し、本人の同意を得た場合</li>
+        <li>本人の生命・健康・財産などの重大な利益を保護するために必要な場合</li>
+        <li>法令等の要請による場合</li>
+      </ul>
+      <p style="font-size:0.85rem;color:var(--ink2);margin-top:0.8rem">業務委託を行う場合は、<strong>委託先との間で守秘義務契約を締結</strong>し、個人情報の適切な取扱い・保護を指示・監督します。</p>
+    </div>
+
+    <!-- 苦情・相談窓口 -->
+    <div class="card card-blue" style="margin-top:1rem">
+      <p style="font-weight:700;margin-bottom:0.6rem">📞 個人情報に関する苦情・相談窓口</p>
+      <p style="font-size:0.87rem;color:var(--ink2);line-height:2">
+        個人情報保護管理者　渡部 亮　宛<br>
+        TEL：03-5960-2965　／　FAX：03-5960-2966<br>
+        E-mail：info@sys-tc.co.jp<br>
+        〒170-0013 東京都豊島区東池袋1-25-6 PMO池袋11階
+      </p>
+      <p style="font-size:0.78rem;color:#888;margin-top:0.5rem">プライバシーポリシー・開示請求・苦情は上記窓口にて誠実・迅速に対応します</p>
+    </div>
+  </div>
+
+  <!-- S2 弊社体制 -->
+  <div class="sec" data-section>
+    <div class="sec-label">SECTION 3</div>
+    <h2>弊社の個人情報保護体制（PMS役割と責任）</h2>
+    <div class="card">
+      <p>弊社ではJIS Q 15001に基づき、以下の役割を設けて個人情報保護を組織的に推進しています。各役割は兼務することができます。ただし<strong>個人情報保護管理者と個人情報保護監査責任者は兼務不可</strong>とされており、監査責任者は管理者から独立した立場でPMSの実施状況を評価・確認します（内部牽制の確保）。</p>
+    </div>
+    <table class="gov-table">
+      <thead>
+        <tr><th>役職</th><th>担当者</th><th>主な責任と権限</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="gov-role">トップマネジメント</span><br><span class="badge-top">最高責任者</span></td>
+          <td style="white-space:nowrap;font-weight:500">保木本 朗</td>
+          <td>個人情報保護に関する全ての責任と権限を有する。個人情報保護管理者を任命し、実行責任と権限を委譲する</td>
+        </tr>
+        <tr>
+          <td><span class="gov-role">個人情報保護管理者</span></td>
+          <td style="white-space:nowrap;font-weight:500">渡部 亮</td>
+          <td>PMSの実施・運営に関する責任と権限を有する。管理者の指示・決定事項は代表の指示事項としての効力を持つ</td>
+        </tr>
+        <tr>
+          <td><span class="gov-role">個人情報保護監査責任者</span><br><span style="font-size:0.65rem;color:var(--accent2)">※管理者との兼務不可</span></td>
+          <td style="white-space:nowrap;font-weight:500">深井 健太</td>
+          <td>定められた事項が適切かつ有効に実施されているかを評価・確認する責任を有する</td>
+        </tr>
+        <tr>
+          <td><span class="gov-role">教育責任者</span></td>
+          <td style="white-space:nowrap;font-weight:500">渡部 亮</td>
+          <td>役員・従業員に遵守させるための教育訓練を企画・運営する責任を有する（本講習の運営責任者）</td>
+        </tr>
+        <tr>
+          <td><span class="gov-role">苦情相談窓口責任者</span></td>
+          <td style="white-space:nowrap;font-weight:500">渡部 亮</td>
+          <td>消費者からの問合せ・苦情等を受付・対応し、再発防止策を検討する責任を有する</td>
+        </tr>
+        <tr>
+          <td><span class="gov-role">システム管理責任者</span></td>
+          <td style="white-space:nowrap;font-weight:500">川衞 達也</td>
+          <td>情報システム運営の方針・施策策定、企画・推進・総括を行う責任を有する</td>
+        </tr>
+        <tr>
+          <td><span class="gov-role">個人情報部門責任者</span></td>
+          <td style="white-space:nowrap;font-weight:500">湯川 修司</td>
+          <td>担当部門で取り扱う個人情報の管理に関して責任を有する</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="card card-amber">
+      <p>⚠️ <strong>従業員の義務</strong>：全従業員は弊社の「個人情報保護に関する基本方針」を把握し、遵守する義務があります。</p>
+    </div>
+  </div>
+
+  <!-- S3 PMS重要性・利点 -->
+  <div class="sec" data-section>
+    <div class="sec-label">SECTION 4</div>
+    <h2>PMSに適合することの重要性及び利点</h2>
+
+    <div class="two-col-pms" style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.2rem">
+
+      <!-- PMSの重要性 -->
+      <div>
+        <p style="font-size:0.82rem;font-weight:700;color:var(--accent);margin-bottom:0.8rem;padding-bottom:0.4rem;border-bottom:2px solid var(--accent)">PMSの重要性</p>
+
+        <div class="card card-blue" style="margin-bottom:0.8rem">
+          <p style="font-size:0.75rem;font-weight:700;color:var(--accent);margin-bottom:0.4rem">⚖️ 法的遵守</p>
+          <p style="font-size:0.82rem">PMSは、個人情報保護法や関連する規制に適合するためのフレームワークを提供します。これにより、企業は法的リスクを軽減し、罰則を回避することができます。</p>
+        </div>
+
+        <div class="card card-blue" style="margin-bottom:0.8rem">
+          <p style="font-size:0.75rem;font-weight:700;color:var(--accent);margin-bottom:0.4rem">🔒 個人情報の保護</p>
+          <p style="font-size:0.82rem">PMSを導入することで、個人情報の収集・管理・保管・処理において適切な手続きを確立し、情報漏洩や不正アクセスから個人情報を守ることができます。</p>
+        </div>
+
+        <div class="card card-blue">
+          <p style="font-size:0.75rem;font-weight:700;color:var(--accent);margin-bottom:0.4rem">🏢 組織の信頼性向上</p>
+          <p style="font-size:0.82rem">PMSに適合した企業は、プライバシーマーク（Pマーク）を取得することができ、これにより顧客や取引先に対して個人情報を適切に管理していることを示すことができます。これが信頼性を高め、ビジネスチャンスを拡大する要因となります。</p>
+        </div>
+      </div>
+
+      <!-- PMSの利点 -->
+      <div>
+        <p style="font-size:0.82rem;font-weight:700;color:var(--accent3);margin-bottom:0.8rem;padding-bottom:0.4rem;border-bottom:2px solid var(--accent3)">PMSの利点</p>
+
+        <div class="card card-green" style="margin-bottom:0.8rem">
+          <p style="font-size:0.75rem;font-weight:700;color:var(--accent3);margin-bottom:0.4rem">🤝 顧客の信頼獲得</p>
+          <p style="font-size:0.82rem">Pマークを取得することで、顧客はその企業が個人情報を適切に取り扱っていると認識し、信頼を寄せるようになります。これにより、顧客の獲得や維持に繋がります。</p>
+        </div>
+
+        <div class="card card-green" style="margin-bottom:0.8rem">
+          <p style="font-size:0.75rem;font-weight:700;color:var(--accent3);margin-bottom:0.4rem">🏆 競争優位性</p>
+          <p style="font-size:0.82rem">PMSを導入している企業は、個人情報保護に対する意識が高いと見なされ、競合他社に対して優位に立つことができます。特に、個人情報を扱う業界では、Pマークの有無が取引先選定の重要な基準となることがあります。</p>
+        </div>
+
+        <div class="card card-green">
+          <p style="font-size:0.75rem;font-weight:700;color:var(--accent3);margin-bottom:0.4rem">📚 教育と意識向上</p>
+          <p style="font-size:0.82rem">PMSの導入に伴い、従業員に対する教育が行われ、個人情報保護に対する意識が高まります。これにより、組織全体での情報保護の文化が醸成されます。</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- S6 最新の漏洩統計 -->
+  <div class="sec" data-section>
+    <div class="sec-label">SECTION 5</div>
+    <h2>最新の個人情報漏洩動向（2024〜2025年）</h2>
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-val">180</div>
+        <div class="stat-lbl">2025年上場企業の漏洩事故件数<br>（歴代2位・前年比4.7%減）</div>
+        <div class="stat-src">東京商工リサーチ 2026年1月</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">3,063<span style="font-size:1.2rem">万人</span></div>
+        <div class="stat-lbl">2025年の漏洩個人情報総数<br>（前年比約2倍・歴代3位）</div>
+        <div class="stat-src">東京商工リサーチ 2026年1月</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">116<span style="font-size:1.2rem">件</span></div>
+        <div class="stat-lbl">ウイルス感染・不正アクセス起因<br>（2年連続100件超・最多更新）</div>
+        <div class="stat-src">東京商工リサーチ 2026年1月</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">19,000<span style="font-size:1rem">件</span></div>
+        <div class="stat-lbl">個人情報保護委員会への<br>相談・報告件数（2024年度・過去最多）</div>
+        <div class="stat-src">個人情報保護委員会 2025年6月</div>
+      </div>
+    </div>
+
+    <!-- 最新事例 -->
+    <div class="incident-list">
+
+      <div class="incident-item">
+        <div class="incident-header" onclick="toggleIncident(this)">
+          <span class="incident-year">2025年9月</span>
+          <div class="incident-title">アサヒグループHD へのランサムウェア攻撃</div>
+          <span class="incident-type type-ransomware">ランサムウェア</span>
+          <span class="incident-chev">▼</span>
+        </div>
+        <div class="incident-body">
+          <p>2025年9月末、アサヒグループホールディングスが<strong>VPN機器の脆弱なパスワードを突かれた不正アクセス</strong>によりランサムウェア攻撃を受けた。攻撃者はVPN経由で侵入後、<strong>約10日間にわたり業務時間外に潜伏・偵察</strong>してから一斉攻撃を発動した（「じっくり派」攻撃の典型例）。</p>
+          <p>データセンターが攻撃の中心となり、国内グループ各社の基幹システムが機能不全に陥った。受注・出荷・在庫管理が停止し、<strong>工場稼働の一時停止・店頭販売での欠品</strong>という社会的影響も発生。攻撃者はデータセンターのみを標的とし、業務ネットワーク全体は被害を免れた（KADOKAWA事例との相違点）。</p>
+          <p><strong>漏洩情報：</strong>当初191万4,000件の流出可能性を公表、精査後に<strong>確定11.5万件（顧客相談室データ152.5万件を含む）</strong>に縮小。2026年2月に主要サービス正常化完了。</p>
+          <p><strong>侵入経路：</strong>自社拠点のVPN／拠点間ネットワーク機器経由。パスワードの脆弱性により管理者権限を奪取。インターネット回線を物理的に遮断してデータセンターを完全隔離することで横展開を阻止。</p>
+          <div class="lesson">📚 教訓：VPN機器のパスワードは強力なものに設定しMFAを必須化する。深夜・週末の異常通信を検知する24時間監視体制が不可欠。初動で「遮断が4時間遅れた」ことが被害拡大要因とされており、初動の速さが被害規模を左右する。</div>
+          <div class="ref-src">アサヒグループホールディングス株式会社「サイバー攻撃によるシステム障害発生について（第1〜4報）」（2025年9〜10月）／トレンドマイクロ「アサヒグループへのランサムウェア攻撃事例を記者会見から考察」（2025年12月18日）／東京商工リサーチ「上場企業の個人情報漏えい・紛失事故調査（2025年）」（2026年1月）</div>
+        </div>
+      </div>
+
+      <div class="incident-item">
+        <div class="incident-header" onclick="toggleIncident(this)">
+          <span class="incident-year">2025年10月</span>
+          <div class="incident-title">アスクル へのランサムウェア攻撃（委託先経由・サプライチェーン侵害）</div>
+          <span class="incident-type type-ransomware">ランサムウェア／委託先リスク</span>
+          <span class="incident-chev">▼</span>
+        </div>
+        <div class="incident-body">
+          <p>2025年10月19日、オフィス用品通販大手アスクルが<strong>委託先（システム運用会社）のVPNアカウントを盗まれて不正侵入</strong>を受けた。通常はMFAを使用していたが、<strong>この委託先にはMFAが設定されていなかった</strong>ことが根本原因。侵入から暗号化まで長期潜伏した「超じっくり派」攻撃。</p>
+          <p>ASKUL・LOHACO・ソロエルアリーナの受注・出荷システムが全面停止。<strong>無印良品・ロフトなど物流を委託していた企業にも被害が波及</strong>し、サプライチェーン全体への影響が拡大。ランサムウェア集団「RansomHouse」が約1.1TBのデータを窃取と声明。</p>
+          <p><strong>業績被害：</strong>11月度の法人単体売上高が前年同期比<strong>95%減</strong>。特別損失<strong>52億1,600万円</strong>を計上。2026年1月の第2四半期決算発表を延期。<strong>漏洩個人情報：約73万9,700件</strong>。2026年2月に主要サービス正常化完了。</p>
+          <p><strong>SES業界への直接的な示唆：</strong>弊社が客先から業務委託を受けるIT企業として、<strong>弊社がアスクルにおける「委託先」の立場に立ちうる</strong>。委託先側の認証管理の甘さが大規模インシデントの起点になった事案として弊社全員が認識すべき事例。</p>
+          <div class="lesson">📚 教訓：①委託先を含む全アクセス経路に例外なくMFAを設定する、②24時間365日の監視体制が必須、③バックアップはオンラインとは物理的に分離された環境に保管する（今回はオンラインバックアップも同時に被害）、④取引先への影響を想定したBCP計画を事前に策定する。</div>
+          <div class="ref-src">アスクル株式会社「ランサムウェア感染によるシステム障害発生に関するお知らせ（第1〜18報）」（2025年10月〜2026年2月）／アスクル株式会社「ランサムウェア攻撃の影響調査結果および安全性強化に向けた取り組みに関する報告書」（2025年12月12日）／東京商工リサーチ「上場企業の個人情報漏えい・紛失事故調査（2025年）」（2026年1月）</div>
+        </div>
+      </div>
+
+      <div class="incident-item">
+        <div class="incident-header" onclick="toggleIncident(this)">
+          <span class="incident-year">2024年6月</span>
+          <div class="incident-title">KADOKAWA・ニコニコ動画へのランサムウェア攻撃</div>
+          <span class="incident-type type-ransomware">ランサムウェア</span>
+          <span class="incident-chev">▼</span>
+        </div>
+        <div class="incident-body">
+          <p>2024年6月8日未明、KADOKAWAグループのデータセンター（プライベートクラウド）にランサムウェア「BlackSuit」（ロシア系犯罪組織）が侵入。<strong>ニコニコ動画・ニコニコ生放送を含むグループ全サービスが停止</strong>し、復旧に約2か月を要した。</p>
+          <p>攻撃者はサーバーを遠隔で再起動し続けたため、エンジニアがデータセンターへ出向き<strong>電源・通信ケーブルを物理的に抜線して封鎖</strong>するに至った。</p>
+          <p><strong>漏洩情報：</strong>ドワンゴ全従業員・取引先・N高等学校の生徒・保護者等、<strong>合計25万4,241人分</strong>の個人情報（氏名・生年月日・口座情報・人事情報等）。売上高84億円減少・特別損失36億円を計上。</p>
+          <p><strong>根本原因：</strong>フィッシング攻撃等により従業員のVPNアカウント情報が窃取され、社内ネットワークへの侵入を許した（同社8月発表より）。</p>
+          <div class="lesson">📚 教訓：VPNアカウントには必ずMFAを設定する。フィッシングメールへの警戒を日常化する。プライベートクラウドとパブリッククラウドの役割分担と、バックアップ体制を整備する。</div>
+          <div class="ref-src">株式会社KADOKAWA「システム障害に関するお知らせ（第1〜11報）」（2024年6〜9月）／ドワンゴ株式会社「サイバー攻撃に関する調査結果のご報告」（2024年8月）</div>
+        </div>
+      </div>
+
+      <div class="incident-item">
+        <div class="incident-header" onclick="toggleIncident(this)">
+          <span class="incident-year">2024年</span>
+          <div class="incident-title">内部不正・退職者による個人情報持ち出し事案（複数企業）</div>
+          <span class="incident-type type-insider">内部不正</span>
+          <span class="incident-chev">▼</span>
+        </div>
+        <div class="incident-body">
+          <p>2024年は「不注意による情報漏洩」「内部不正による情報漏洩」がIPA情報セキュリティ10大脅威でランクアップ。特に<strong>退職前後の個人情報持ち出しと転職先での使用</strong>が複数企業で問題化した。</p>
+          <p>IPAの2024年度中小企業調査によると、サイバーインシデントを受けた企業のうち<strong>35.1%で個人情報漏洩が発生</strong>。原因の約7割が取引先への影響を引き起こした。</p>
+          <p><strong>弊社業務への示唆：</strong>客先常駐で得た顧客リスト・システム情報・技術情報を退職後に持ち出す行為は、不正競争防止法違反として刑事罰の対象となる。</p>
+          <div class="lesson">📚 教訓：離任・退職時のアクセス権の速やかな削除と、在職中のデータ持ち出しログ監視が重要。弊社業務で得た客先の情報は退職後も秘密保持義務が継続する。</div>
+          <div class="ref-src">IPA「情報セキュリティ10大脅威 2024」（2024年3月）／IPA「中小企業における情報セキュリティ対策の現状調査 2024年度」（2025年）</div>
+        </div>
+      </div>
+
+      <div class="incident-item">
+        <div class="incident-header" onclick="toggleIncident(this)">
+          <span class="incident-year">2024年</span>
+          <div class="incident-title">マイナンバー漏洩が過去最多（3,718件）</div>
+          <span class="incident-type type-misuse">人為的ミス</span>
+          <span class="incident-chev">▼</span>
+        </div>
+        <div class="incident-body">
+          <p>個人情報保護委員会の2024年度上半期報告によると、マイナンバーを含む特定個人情報の漏洩件数が<strong>3,718件と過去最多</strong>を記録（前年度を半年で超過）。</p>
+          <p>主な原因は<strong>「誤送信」「誤掲載」</strong>などの人的ミスが大半。委託先・再委託先での管理体制の不備も多数確認された。</p>
+          <p>マイナンバーは「特定個人情報」として<strong>通常の個人情報より厳格な管理が義務付けられており、1件でも漏洩した場合に報告義務が生じる</strong>（4類型の①②③に相当）。</p>
+          <div class="lesson">📚 教訓：マイナンバーを扱う業務では特に慎重な取扱いが必要。弊社の人事・経理業務でマイナンバーを扱う際は、専用端末・専用ファイルで管理し、目的外利用を絶対にしない。</div>
+          <div class="ref-src">個人情報保護委員会「特定個人情報の漏えい事案等に関する報告受付件数（2024年度上半期）」（2024年）</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- S8 ケーススタディ -->
+  <div class="sec" data-section>
+    <div class="sec-label">SECTION 6</div>
+    <h2>ケーススタディ：よくある違反事例</h2>
+
+    <!-- NDA前提の注意書き -->
+    <div style="background:#fff0f0;border:2px solid var(--accent2);border-radius:8px;padding:1.2rem 1.5rem;margin-bottom:1.5rem">
+      <p style="font-weight:700;color:var(--accent2);font-size:0.9rem;margin-bottom:0.5rem">⛔ 大前提：弊社の全業務はNDA（秘密保持契約）の下で遂行されています</p>
+      <p style="font-size:0.84rem;color:#7a1010;line-height:1.8">弊社が客先から受託する業務では、<strong style="color:var(--accent2)">必ずNDA（秘密保持契約）が締結</strong>されています。以下のNG行為は個人情報保護法違反であるとともに、<strong style="color:var(--accent2)">全てNDA違反にも該当</strong>します。NDA違反は契約解除・損害賠償請求の対象となり、弊社のビジネス継続に直接的な打撃を与えます。</p>
+    </div>
+
+    <!-- NG事例1 -->
+    <div class="case-study">
+      <div class="case-header" onclick="toggleCase(this)">
+        <span class="case-type bad">NG事例 1</span>
+        <div class="case-title">開発環境に本番の顧客データをそのままコピーした</div>
+        <span class="case-chev">▼</span>
+      </div>
+      <div class="case-body">
+        <p>新機能の開発テストのために、客先本番DBから顧客テーブル（<strong style="color:var(--accent2)">氏名・メールアドレス・購買履歴 約5万件</strong>）をCSV出力し、開発環境のDBにインポートした。<span style="color:var(--accent2);font-weight:700">「テスト後は削除するつもりだった」</span>では通用しない。</p>
+        <div style="background:#fff0f0;border-left:4px solid var(--accent2);padding:0.9rem 1.1rem;margin-top:0.8rem;border-radius:0 4px 4px 0">
+          <p style="color:var(--accent2);font-weight:700;font-size:0.82rem;margin-bottom:0.5rem">⛔ 違反内容（複合）</p>
+          <ul style="font-size:0.82rem;color:#7a1010;line-height:2;padding-left:1.2rem">
+            <li><strong>NDA違反：</strong>客先から秘密情報として委託されたデータを、契約で定められた目的外（開発環境）で使用</li>
+            <li><strong>個人情報保護法違反：</strong>利用目的外使用（本番データを開発目的に転用）</li>
+            <li><strong>安全管理措置の不備：</strong>開発環境のセキュリティは本番より低く、漏洩リスクが大幅に上昇する</li>
+          </ul>
+        </div>
+        <div style="background:#fff8f0;border-left:4px solid #e67e22;padding:0.9rem 1.1rem;margin-top:0.6rem;border-radius:0 4px 4px 0">
+          <p style="color:#a04000;font-weight:700;font-size:0.82rem">💥 想定される結果：<span style="font-weight:400">客先からの契約解除・損害賠償請求／漏洩発生時は個人情報保護委員会への報告義務（1,000件超）／弊社の社会的信用の失墜</span></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- NG事例2 -->
+    <div class="case-study">
+      <div class="case-header" onclick="toggleCase(this)">
+        <span class="case-type bad">NG事例 2</span>
+        <div class="case-title">業務でChatGPT（無料版）に個人情報を含む内容を入力した</div>
+        <span class="case-chev">▼</span>
+      </div>
+      <div class="case-body">
+        <p>コードレビューを効率化するため、客先の<strong style="color:var(--accent2)">顧客のメールアドレス・注文番号・購買金額が含まれているログファイル</strong>をそのままChatGPT（無料版）に貼り付けて「このログの問題点を分析して」と入力した。<span style="color:var(--accent2);font-weight:700">入力した瞬間に違反は成立する。</span></p>
+        <div style="background:#fff0f0;border-left:4px solid var(--accent2);padding:0.9rem 1.1rem;margin-top:0.8rem;border-radius:0 4px 4px 0">
+          <p style="color:var(--accent2);font-weight:700;font-size:0.82rem;margin-bottom:0.5rem">⛔ 違反内容（複合）</p>
+          <ul style="font-size:0.82rem;color:#7a1010;line-height:2;padding-left:1.2rem">
+            <li><strong>NDA違反：</strong>客先の秘密情報（個人データを含むログ）を、NDAで禁じられた第三者（OpenAI社）へ開示</li>
+            <li><strong>個人情報保護法違反：</strong>本人同意なき第三者（外部AIサービス）への個人情報の提供</li>
+            <li><strong>漏洩リスク：</strong>無料版ChatGPTはトレーニングデータとして使用される可能性があり、入力した個人情報が外部に学習・漏洩するおそれ</li>
+          </ul>
+        </div>
+        <div style="background:#fff8f0;border-left:4px solid #e67e22;padding:0.9rem 1.1rem;margin-top:0.6rem;border-radius:0 4px 4px 0">
+          <p style="color:#a04000;font-weight:700;font-size:0.82rem">💥 想定される結果：<span style="font-weight:400">NDA違反による即時契約解除・損害賠償請求／客先データが競合他社・外部に流出する最悪のシナリオ／刑事罰の可能性（不正競争防止法）</span></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- NG事例3 -->
+    <div class="case-study">
+      <div class="case-header" onclick="toggleCase(this)">
+        <span class="case-type bad">NG事例 3</span>
+        <div class="case-title">バグ報告メールに個人情報が写ったスクリーンショットを添付した</div>
+        <span class="case-chev">▼</span>
+      </div>
+      <div class="case-body">
+        <p>画面表示の不具合を報告するため、<strong style="color:var(--accent2)">ユーザー管理画面（氏名・住所・電話番号が一覧表示）のスクリーンショット</strong>をそのまま社外の開発会社宛にメールで送付した。<span style="color:var(--accent2);font-weight:700">「報告のためだから仕方ない」は言い訳にならない。</span></p>
+        <div style="background:#fff0f0;border-left:4px solid var(--accent2);padding:0.9rem 1.1rem;margin-top:0.8rem;border-radius:0 4px 4px 0">
+          <p style="color:var(--accent2);font-weight:700;font-size:0.82rem;margin-bottom:0.5rem">⛔ 違反内容（複合）</p>
+          <ul style="font-size:0.82rem;color:#7a1010;line-height:2;padding-left:1.2rem">
+            <li><strong>NDA違反：</strong>客先の秘密情報（個人情報入り画面）を、NDAで禁じられた第三者（社外の開発会社）へ開示</li>
+            <li><strong>個人情報保護法違反：</strong>本人同意なき第三者（社外企業）への個人情報の提供</li>
+            <li><strong>安全管理措置の不備：</strong>メール送信は暗号化されていない場合が多く、通信経路での傍受リスクがある</li>
+          </ul>
+        </div>
+        <div style="background:#fff8f0;border-left:4px solid #e67e22;padding:0.9rem 1.1rem;margin-top:0.6rem;border-radius:0 4px 4px 0">
+          <p style="color:#a04000;font-weight:700;font-size:0.82rem">💥 想定される結果：<span style="font-weight:400">NDA違反による契約解除・損害賠償請求／送付先の開発会社がさらに情報を漏洩する二次被害リスク／個人情報漏洩として客先が監督官庁に報告義務を負うケースも</span></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 総括 -->
+    <div style="background:#1a1a35;color:#fff;border-radius:10px;padding:1.8rem 2rem;margin-top:1.5rem">
+      <p style="font-size:0.95rem;font-weight:700;color:#ff8a80;margin-bottom:1rem">⚠️ 総括：NG行動は弊社の存続に関わる</p>
+      <p style="font-size:0.87rem;line-height:1.9;color:rgba(255,255,255,0.85)">上記のNG行動はいずれも、<strong style="color:#ff8a80">個人情報保護法違反とNDA違反を同時に引き起こす複合的な違反行為</strong>です。「知らなかった」「悪意はなかった」では免責されず、<strong style="color:#ff8a80">契約解除・損害賠償請求・刑事罰・社会的信用の失墜</strong>という深刻な結果につながります。</p>
+      <p style="font-size:0.87rem;line-height:1.9;color:rgba(255,255,255,0.85);margin-top:0.8rem"><strong style="color:#fff">業務において個人情報を取り扱う際は、必ず客先のデータ取扱いポリシーおよびNDAの内容に沿った対応を徹底してください。</strong>不明な点は作業前に必ず客先担当者または弊社の個人情報保護管理者（渡部 亮）に確認することを習慣にしてください。</p>
+    </div>
+  </div>
+
+  <!-- S9 生成AI注意点 -->
+  <div class="sec" data-section>
+    <div class="sec-label">SECTION 7</div>
+    <h2>生成AIへの個人情報入力における注意点</h2>
+    <div class="card card-red">
+      <p>⚠️ 生成AIツール（ChatGPT・GitHub Copilot・Claude等）の業務利用は急速に広まっていますが、<strong>個人情報や機密情報の入力は重大なリスク</strong>を伴います。2024年度より個人情報保護委員会もAIへの個人情報入力に関する監督を強化しています。</p>
+    </div>
+    <ul class="checklist">
+      <li>
+        <div class="check-box" onclick="toggleCheck(this)"></div>
+        <div><strong>客先・弊社のAIポリシーを確認：客先常駐中は客先のAI使用ポリシーに従う。ポリシーが不明な場合は使用前に確認する</strong></div>
+      </li>
+      <li>
+        <div class="check-box" onclick="toggleCheck(this)"></div>
+        <div><strong>入力前に必ず確認</strong>：入力内容に氏名・メール・住所・電話番号等の個人情報が含まれていないか確認する</div>
+      </li>
+      <li>
+        <div class="check-box" onclick="toggleCheck(this)"></div>
+        <div><strong>無料版と企業向けAPIの違いを把握</strong>：無料・一般向けサービスはトレーニングデータに使用される場合がある。企業向けAPIは多くの場合データ学習しない（利用規約を確認）</div>
+      </li>
+      <li>
+        <div class="check-box" onclick="toggleCheck(this)"></div>
+        <div><strong>マスキング処理の習慣化</strong>：個人情報が含まれるコードやログはAI入力前に必ずダミーデータに置換する（例：<code>user@example.com</code>、<code>テストユーザー</code>）</div>
+      </li>
+      <li>
+        <div class="check-box" onclick="toggleCheck(this)"></div>
+        <div><strong>GitHub Copilotの注意点</strong>：個人情報を含むコードでのCopilot使用は、パブリックコードとして学習される可能性がある。機密コードでの使用は要注意</div>
+      </li>
+    </ul>
+  </div>
+
+
+  <!-- 理解度テスト・受講完了 -->
+  <div class="sec" data-section>
+    <div class="sec-label">KNOWLEDGE CHECK &amp; COMPLETION</div>
+    <h2>理解度テスト・受講完了報告</h2>
+
+    <div style="background:linear-gradient(135deg,#1a237e 0%,#2563eb 100%);border-radius:12px;padding:2.5rem;text-align:center;box-shadow:0 8px 24px rgba(44,62,140,0.2)">
+      <p style="color:#fff;font-size:1.05rem;font-weight:700;margin-bottom:0.5rem">📋 学習コンテンツの確認が完了したら</p>
+      <p style="color:rgba(255,255,255,0.8);font-size:0.85rem;margin-bottom:2rem;line-height:1.8">
+        Microsoft Formsの理解度テストに回答してください。<br>
+        テスト（全20問）と受講完了報告（氏名・事業部・感想）をまとめて送信できます。
+      </p>
+
+      <!-- 含まれる設問バッジ -->
+      <div style="display:flex;flex-wrap:wrap;gap:0.6rem;justify-content:center;margin-bottom:2rem">
+        <span style="background:rgba(255,255,255,0.15);color:#fff;font-size:0.75rem;padding:0.3em 0.9em;border-radius:20px;border:1px solid rgba(255,255,255,0.3)">📝 氏名・事業部</span>
+        <span style="background:rgba(255,255,255,0.15);color:#fff;font-size:0.75rem;padding:0.3em 0.9em;border-radius:20px;border:1px solid rgba(255,255,255,0.3)">🧠 理解度テスト 全20問</span>
+        <span style="background:rgba(255,255,255,0.15);color:#fff;font-size:0.75rem;padding:0.3em 0.9em;border-radius:20px;border:1px solid rgba(255,255,255,0.3)">✅ PMSの理解度・体制確認</span>
+        <span style="background:rgba(255,255,255,0.15);color:#fff;font-size:0.75rem;padding:0.3em 0.9em;border-radius:20px;border:1px solid rgba(255,255,255,0.3)">📋 個人情報漏洩の予想結果（自由記述）</span>
+      </div>
+
+      <a href="https://forms.office.com/Pages/ResponsePage.aspx?id=-zaCxypeK0KxTN1oyWfJlxXXY0OVMxBFvG3wVek5GRBUMlQ2OVpQN1ZQQzlKVjc0VzdONkcwTkwzSi4u"
+         target="_blank" rel="noopener noreferrer"
+         style="display:inline-flex;align-items:center;gap:0.7rem;background:#fff;color:var(--accent);text-decoration:none;padding:1rem 2.5rem;border-radius:8px;font-size:1rem;font-weight:700;font-family:'Noto Sans JP',sans-serif;box-shadow:0 4px 14px rgba(0,0,0,0.18);transition:all 0.2s">
+        📋 理解度テストを受ける（Microsoft Forms）
+      </a>
+      <p style="color:rgba(255,255,255,0.6);font-size:0.72rem;margin-top:1rem">※ Microsoft 365 アカウントでのサインインが必要です（社内ユーザーのみ）</p>
+    </div>
+  </div>
+
+  <!-- まとめ -->
+  <div class="summary" data-section>
+    <h3>📌 このモジュールのまとめ</h3>
+    <ul>
+      <li>弊社はJIS Q 15001に基づくPMSを運用。全従業員は弊社の「個人情報保護に関する基本方針」を把握・遵守する義務がある</li>
+      <li>個人情報保護体制は「トップマネジメント→管理者→監査責任者→教育責任者」の独立した役割で推進。管理者と監査責任者の兼務は不可</li>
+      <li>個人情報は氏名・住所だけでなく、組み合わせによる特定・デジタル識別子・要配慮情報（病歴等）も含む広い概念</li>
+      <li>2025年のアサヒ・アスクル事件が示すように、VPN・委託先のMFA未設定が大規模インシデントの起点となる。全アクセス経路でMFAを徹底する</li>
+      <li>弊社は客先から見た「委託先」の立場。委託先側の認証管理の甘さが客先への大規模被害を引き起こした事例として重く受け止める</li>
+      <li>ケーススタディで学んだNG行為（本番データ持込・AI入力・スクリーンショット送付）を日常業務で繰り返さない</li>
+      <li>生成AIへの個人情報入力は「第三者提供」に該当しうる。入力前のマスキングと客先ポリシー確認を徹底する</li>
+      <li>漏洩が疑われたら：①遮断 ②証拠保全 ③即時報告。隠蔽は状況を悪化させ個人責任も問われる</li>
+    </ul>
+  </div>
+
+  <div class="nav-btns">
+    <a href="m12.html" class="btn btn-prev">M-12 総合演習・修了評価</a>
+    <a href="index.html" class="btn btn-next">受講完了 — ポータルへ戻る</a>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+const sections = document.querySelectorAll('[data-section]');
+const fill = document.getElementById('progressFill');
+const pct = document.getElementById('progressPct');
+function updateProgress() {
+  const scrolled = window.scrollY + window.innerHeight * 0.6;
+  let v = 0;
+  sections.forEach(s => { if (s.offsetTop < scrolled) v++; });
+  const p = Math.min(100, Math.round(v / sections.length * 100));
+  fill.style.width = p + '%';
+  pct.textContent = p + '%';
+}
+window.addEventListener('scroll', updateProgress);
+updateProgress();
+
+function toggleStep(el) {
+  const wasActive = el.classList.contains('active');
+  document.querySelectorAll('.step-item').forEach(s => {
+    s.classList.remove('active');
+    const t = s.querySelector('.step-toggle');
+    if (t) t.textContent = '▾ 詳細を確認';
+  });
+  if (!wasActive) {
+    el.classList.add('active');
+    const t = el.querySelector('.step-toggle');
+    if (t) t.textContent = '▴ 閉じる';
+  }
+}
+
+function toggleCase(h) {
+  const cs = h.closest('.case-study');
+  cs.classList.toggle('open');
+}
+
+function toggleIncident(h) {
+  const item = h.closest('.incident-item');
+  item.classList.toggle('open');
+}
+
+function toggleCheck(box) {
+  box.classList.toggle('checked');
+  box.textContent = box.classList.contains('checked') ? '✓' : '';
+}
+
+function qa(btn, result, okId, ngId) {
+  btn.closest('.quiz-block').querySelectorAll('.q-opt').forEach(o => o.disabled = true);
+  btn.classList.add(result);
+  document.getElementById(okId).classList.remove('show');
+  document.getElementById(ngId).classList.remove('show');
+  document.getElementById(result === 'correct' ? okId : ngId).classList.add('show');
+  calcScore();
+}
+
+function calcScore() {
+  const total = 20;
+  const correct = document.querySelectorAll('.q-opt.correct').length;
+  const answered = document.querySelectorAll('.q-opt.correct, .q-opt.wrong').length;
+  const blocks = document.querySelectorAll('.quiz-block').length;
+  const doneBlocks = document.querySelectorAll('.q-opt:disabled').length > 0
+    ? document.querySelectorAll('.quiz-block').length - [...document.querySelectorAll('.quiz-block')].filter(b => !b.querySelector('.q-opt:disabled')).length
+    : 0;
+  if (doneBlocks >= total) {
+    const area = document.getElementById('scoreArea');
+    area.style.display = 'block';
+    document.getElementById('scoreNum').textContent = correct + ' / ' + total + ' 正解';
+    const pct = Math.round(correct / total * 100);
+    let msg = pct >= 80 ? '✅ 合格（80点以上）。下記フォームに記入して送信してください。'
+            : pct >= 60 ? '⚠️ あと少し！復習してから再チャレンジしてください。'
+            : '❌ 内容を再確認して再チャレンジしてください。';
+    document.getElementById('scoreMsg').textContent = pct + '点 — ' + msg;
+  }
+}
+
+
+
+
+
+function copyForm() {
+  document.getElementById('formError').style.display = 'none';
+  if (!validateForm()) {
+    document.getElementById('formError').style.display = 'block';
+    return;
+  }
+  const d = getFormData();
+  navigator.clipboard.writeText(buildText(d)).then(() => {
+    document.getElementById('copyDone').style.display = 'block';
+    setTimeout(() => { document.getElementById('copyDone').style.display = 'none'; }, 4000);
+  });
+}
+</script>
+
+</body>
+</html>
