@@ -714,6 +714,18 @@ code{font-family:'DM Sans',monospace;font-size:0.82em;background:var(--surface2)
       <p style="font-size:0.87rem;line-height:1.9;color:rgba(255,255,255,0.85)">上記のNG行動はいずれも、<strong style="color:#ff8a80">個人情報保護法違反とNDA違反を同時に引き起こす複合的な違反行為</strong>です。「知らなかった」「悪意はなかった」では免責されず、<strong style="color:#ff8a80">契約解除・損害賠償請求・刑事罰・社会的信用の失墜</strong>という深刻な結果につながります。</p>
       <p style="font-size:0.87rem;line-height:1.9;color:rgba(255,255,255,0.85);margin-top:0.8rem"><strong style="color:#fff">業務において個人情報を取り扱う際は、必ず客先のデータ取扱いポリシーおよびNDAの内容に沿った対応を徹底してください。</strong>不明な点は作業前に必ず客先担当者または弊社の個人情報保護管理者（渡部 亮）に確認することを習慣にしてください。</p>
     </div>
+
+    <!-- 日常の安全管理措置 -->
+    <div class="card card-amber" style="margin-top:1.5rem">
+      <p style="font-weight:700;margin-bottom:0.8rem">🔐 日常業務における安全管理のルール</p>
+      <p style="font-size:0.85rem;color:var(--ink2);margin-bottom:0.8rem">個人情報・認証情報を扱う際は、以下を必ず守ってください。</p>
+      <ul style="font-size:0.83rem;color:var(--ink2);line-height:2;padding-left:1.2rem">
+        <li><strong style="color:var(--accent2)">パスワードの平文管理を禁止</strong>：ID・パスワードをテキストファイル・Excel・付箋・メール本文などに平文（暗号化されていない状態）で保存・送信しない。必ずパスワード管理ツールを使用し、共有が必要な場合も平文で送らない</li>
+        <li><strong>VPN・各種アカウントにはMFA（多要素認証）を設定</strong>する</li>
+        <li>個人情報を含むファイルは<strong>暗号化して保管</strong>し、アクセス権限は業務上必要な最小限に限定する</li>
+        <li>離席時は必ず<strong>画面ロック</strong>を行い、第三者に画面を見られないようにする</li>
+      </ul>
+    </div>
   </div>
 
   <!-- S9 生成AI注意点 -->
@@ -785,6 +797,7 @@ code{font-family:'DM Sans',monospace;font-size:0.82em;background:var(--surface2)
       <li>個人情報保護体制は「トップマネジメント→管理者→監査責任者→教育責任者」の独立した役割で推進。管理者と監査責任者の兼務は不可</li>
       <li>個人情報は氏名・住所だけでなく、組み合わせによる特定・デジタル識別子・要配慮情報（病歴等）も含む広い概念</li>
       <li>2025年のアサヒ・アスクル事件が示すように、VPN・委託先のMFA未設定が大規模インシデントの起点となる。全アクセス経路でMFAを徹底する</li>
+      <li>ID・パスワードの平文管理は禁止。テキスト・Excel・付箋・メール本文に平文で保存・送信せず、パスワード管理ツールを使用する</li>
       <li>弊社は客先から見た「委託先」の立場。委託先側の認証管理の甘さが客先への大規模被害を引き起こした事例として重く受け止める</li>
       <li>ケーススタディで学んだNG行為（本番データ持込・AI入力・スクリーンショット送付）を日常業務で繰り返さない</li>
       <li>生成AIへの個人情報入力は「第三者提供」に該当しうる。入力前のマスキングと客先ポリシー確認を徹底する</li>
